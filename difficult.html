@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bio-Buddy Difficult Level</title>
+    <style>
+        body {
+            background-image: url('https://assets.onecompiler.app/435c94h45/438gfyjxp/BIOBUD.png');
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial;
+            text-align: center;
+            margin: 0px;
+        }
+        .topnav {
+            overflow: hidden;
+            background-color: #f4dbdf;
+            padding: 14px;
+            text-align: left;
+        }
+        .topnav a {
+            color: #817ebd;
+            text-decoration: none;
+            font-size: 30px;
+            display: inline-block;
+            padding-left: 20px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .popup {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 50%;
+        }
+        .close-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #817ebd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    border: 2px solid black;
+}
+
+
+.clue {
+    font-size: 1.5em;
+    font-weight: bold;
+    background: white;
+    padding: 30px; /* Increased padding for better spacing */
+    margin: 20px; /* Added margin for spacing */
+    border-radius: 10px;
+    text-align: center;
+    color: #665c9e;
+}
+        .image {
+            width: 115px;
+            height: 95px;
+            border: 2px solid white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .answer-input {
+            font-size: 1.2em;
+            gap: 5px;
+            padding: 10px;
+            border: 2px solid #9886cab7;
+            border-radius: 5px;
+            text-align: center;
+            width: 250px;
+        }
+        .submit-btn, .nav-btn {
+            font-size: 1em;
+            gap: 5px;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #817ebd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-btn:hover, .nav-btn:hover {
+            background-color: #665c9e;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .nav-btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <a href="https://jb-shadow30.github.io/Bio-Buddy/bbbig.html">Bio-buddy</a>
+    </div>
+    <h1>Difficult Level</h1>
+    <div id="game-area">
+        <div class="image-container" id="image-container"></div>
+        <p id="clue" class="clue"></p>
+        <input type="text" id="answer-input" class="answer-input" placeholder="Type your answer here">
+        <button class="submit-btn" onclick="checkAnswer()">Submit</button>
+        <div>
+            <button class="nav-btn" onclick="prevQuestion()">Previous</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()" disabled>Next</button>
+        </div>
+    </div>
+   
+    <div class="overlay" id="overlay-correct">
+        <div class="popup">
+            <h2>You got the correct answer! ✅ </h2>
+           <em><h2>Did you know that? </h2></em>
+            <h2><p id="trivia"></p></h2>
+            <button class="close-btn" onclick="closePopup('overlay-correct')">OK</button>
+        </div>
+    </div>
+   
+    <div class="overlay" id="overlay-wrong">
+        <div class="popup">
+            <h2>Oh no... try again! ❌</h2>
+            <button class="close-btn" onclick="closePopup('overlay-wrong')">OK</button>
+        </div>
+    </div>
+
+
+    <script>
+        const questions = [
+        {
+                clue: "Lobes that are formed by amoebas and their eukaryotic cells that are used for movement and ingestion of phagocytosis.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/sewing-top-photo.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/hands-kneading-dough.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/images%20(6).jpg",
+                    
+                ],
+                answers: ["pseudopods"],
+                trivia: "Immune cells extend these to capture and engulf harmful bacteria or debris."
+            },
+            {
+                clue: "This organelle is known as the “post office” of the cell where it sorts, tags, packages, and distributes lipids and proteins",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/holding-beef-bulgogi-with-chopsticks-thumbnail.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/distillation-apparatus-andrew-lambert-photography.jpg",
+                    
+                ],
+                answers: ["golgi apparatus"],
+                trivia: "It processes, sorts, and packages proteins and lipids, also creating lysosomes."
+            },
+            {
+                clue: "This cell part is a structural network of protein fibers that provides shape, support, and movement for the cell while also aiding in intracellular transport.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43a7vbbzb/images%20(2).jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43a7vbbzb/istockphoto-1064310652-612x612.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43a7vbbzb/images%20(3).jpg",
+                    
+                ],
+                answers: ["cytoskeleton"],
+                trivia: "This is a dynamic structure that helps cells maintain shape, move, and transport materials."
+            },
+            {
+                clue: "These small organelles are known to detoxify poisons that may enter the body as well as break down fatty and amino acids.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/images.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/blue-ocean-28668-2560x1600.webp",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/mathematics-19-512.webp",
+                    
+                ],
+                answers: ["peroxisomes", "peroxisome"],
+                trivia: "It contains enzymes like catalase to break down toxic substances and fatty acids."
+            },
+            {
+                clue: "This cell part is an organelle that helps organize microtubules and plays a crucial role in cell division by assisting in the formation of the spindle fibers.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/2009phil10centobv.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/images%20(4).jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/076484068713_1.webp",
+                    
+                ],
+                answers: ["centrioles", "centriole"],
+                trivia: "Aside from cell division, they also help form cilia and flagella for movement."
+            },
+            {
+                clue: "This cell part is an organelle located inside the nucleus that is responsible for producing ribosomes, which are essential for protein synthesis.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/images%20(5).jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/did-you-know-zodiac-Leo.webp",
+                    "https://assets.onecompiler.app/43a7vak8b/43b94t7vq/weight-loss.png",
+                    
+                ],
+                answers: ["nucleolus"],
+                trivia: "It temporarily disappears during cell division and reforms to resume ribosome production."
+            },
+            {
+                clue: "The ability of the cell membrane to allow some substances to pass while restricting others.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43a7vbbzb/Child-Hates-Vegetables-How-to-Encourage-Kids-to-Eat-Greens.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43a7vbbzb/images.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43a7vbbzb/images%20(1).jpg",
+                    
+                ],
+                answers: ["selective permeability"],
+                trivia: "Nerve cells depend on this to control ion flow, allowing quick signal transmission."
+            },
+            {
+                clue: "This creates a watertight seal to keep liquid from escaping between the cells.",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/istockphoto-504681009-612x612.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/junk.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/shaun-the-sheep-2000-aedde1a2fbc14a168c93ebaa9e4e76ad.jpg",
+                    
+                ],
+                answers: ["tight junctions", "tight junction"],
+                trivia: "Stomach cells rely on these to prevent acid from leaking and damaging nearby tissues."
+            },
+            {
+                clue: "Membrane channels between adjacent cells that allow the direct exchange of cytoplasmic substances",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/front-teeth-gap-without-braces.png",
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/junk.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/Ion_portal.webp",
+                    
+                ],
+                answers: ["gap junctions", "gap junction"],
+                trivia: "These allow heart cells to pass electrical signals rapidly, ensuring synchronized heartbeats."
+            },
+            {
+                clue: "Cells undergo these changes to adapt with its environment and is sometimes referred to as cell specialization",
+                images: [
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/jail.jpg",
+                    "https://assets.onecompiler.app/43a7vak8b/43bg8pex2/genetic-modification-techniques-and-applications-382001-960x540.jpg",
+                    
+                ],
+                answers: ["cell modification"],
+                trivia: "Some cells permanently change shape and function, like red blood cells losing their nucleus to carry more oxygen efficiently."
+            },
+        ];
+
+
+// Fisher-Yates Shuffle Algorithm
+function shuffleArray(array) {
+for (let i = array.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]]; // Swap elements
+}
+}
+
+
+// Shuffle questions before starting
+shuffleArray(questions);
+let currentQuestionIndex = 0;
+
+
+function loadQuestion() {
+const question = questions[currentQuestionIndex];
+document.getElementById("clue").textContent = question.clue;
+const imageContainer = document.getElementById("image-container");
+imageContainer.innerHTML = '';
+
+
+question.images.forEach(imgSrc => {
+const img = document.createElement("img");
+img.src = imgSrc;
+img.className = "image";
+imageContainer.appendChild(img);
+});
+
+
+document.getElementById("answer-input").value = '';
+document.getElementById("next-btn").disabled = true;
+}
+
+
+// Shuffle questions before starting (do this only once at the beginning)
+shuffleArray(questions);
+
+
+function checkAnswer() {
+    const question = questions[currentQuestionIndex];
+    const userAnswer = document.getElementById("answer-input").value.trim().toLowerCase();
+
+
+    if (!userAnswer) {
+        alert("Please enter an answer.");
+        return;
+    }
+
+
+    if (question.answers.includes(userAnswer)) {
+        document.getElementById("trivia").textContent = question.trivia;
+        document.getElementById("overlay-correct").style.display = "flex";
+        document.getElementById("next-btn").disabled = false;
+        updateXP("easy");  // Add the difficulty level here based on the current question
+    } else {
+        document.getElementById("overlay-wrong").style.display = "flex";
+    }
+}
+
+
+
+
+function closePopup(overlayId) {
+document.getElementById(overlayId).style.display = "none";
+}
+
+
+function prevQuestion() {
+if (currentQuestionIndex > 0) {
+currentQuestionIndex--;
+loadQuestion();
+}
+}
+
+
+function nextQuestion() {
+if (currentQuestionIndex < questions.length - 1) {
+currentQuestionIndex++;
+loadQuestion();
+}
+}
+
+
+document.getElementById("answer-input").addEventListener("keypress", function(event) {
+if (event.key === "Enter") {
+event.preventDefault();
+checkAnswer();
+}
+});
+
+
+// Shuffle and load the first question
+shuffleArray(questions);
+loadQuestion();
+
+
+
+
+// Allowed usernames and passwords (stored as key-value pairs)
+const allowedUsers = {
+    "ErinalejaB_": "BEn4821",
+    "MarquinarjonaB_": "MAr9264",
+    "DanielmaquillaoB_": "DMa6473",
+    "MaroonquindoB_": "MQu2941",
+    "MaryhuetB_": "MHu8375",
+    "NhianeryB_": "NNer5690",
+    "LanzbauzonB_": "LBa9432",
+    "KarlsanchezB_": "KSa3786",
+    "DenisecastroB_": "DCa8164",
+
+
+    "MatthewchoB_": "MCh7395",
+    "GiananagaB_": "GNn3748",
+    "RavensimosaB_": "RSi8259",
+    "KarlabarreraB_": "KBa7926",
+
+
+    "RelvinadorB_": "RAd1583",
+    "KleevegambolB_": "KGa5182",
+    "KhalidiewidaB_": "KIe4037",
+    "MeinardsantosB_": "MSa6534",
+    "JulianvinluanB_": "JVi4018",
+    "JulianedeguzmanB_": "JDe2758"
+};
+
+
+/// Loop until correct credentials are entered
+let username, password;
+let isAuthenticated = false;
+
+
+while (!isAuthenticated) {
+    // Ask for username and password inside the loop only once
+    username = prompt("Enter your username:");
+    password = prompt("Enter your password:");
+
+
+    // Check if the username exists and the password matches
+    if (allowedUsers[username] && allowedUsers[username] === password) {
+        alert(`Welcome, ${username}! 🎉`);
+        isAuthenticated = true;
+    } else {
+        alert("Incorrect username or password. Please try again. ❌");
+    }
+}
+
+
+// Continue the game only if authenticated
+
+
+
+
+function updateXP(difficulty) {
+    fetch("http://localhost:2080/update/XP", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, difficulty })
+    })
+    .then(res => res.json())
+    .then(data => console.log("XP Updated:", data))
+    .catch(err => console.error("Error updating XP:", err));
+}
+
+
+</script>
+
+
+</body>
+</html>
+
