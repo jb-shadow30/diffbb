@@ -419,7 +419,7 @@ while (!isAuthenticated) {
 
 
 function updateXP(difficulty) {
-    fetch("http://localhost:2080/update/XP", {
+    fetch("https://athletics-sophisticated-cathedral-aware.trycloudflare.com/update/XP", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, difficulty })
